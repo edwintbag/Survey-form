@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .progress-bar-container {
+            margin: 20px 0;
+            background: #e0e0e0;
+            border-radius: 5px;
+            height: 20px;
+            width: 100%;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #4CAF50;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Multi-Section Survey Form</h1>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <form id="surveyForm">
+            <!-- Section 1 -->
+            <div class="form-section active" id="section1">
+                <h2>Personal Information</h2>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" name="age" placeholder="Enter your age" min="1" required>
+                </div>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="form-section" id="section2">
+                <h2>Preferences</h2>
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select your gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="favoriteColor">Favorite Color:</label>
+                    <input type="text" id="favoriteColor" name="favoriteColor" placeholder="Enter your favorite color" required>
+                </div>
+            </div>
+
+            <!-- Section 3 -->
+            <div class="form-section" id="section3">
+                <h2>Work Details</h2>
+                <div class="form-group">
+                    <label for="profession">Profession:</label>
+                    <input type="text" id="profession" name="profession" placeholder="Enter your profession" required>
+                </div>
+                <div class="form-group">
+                    <label for="experience">Years of Experience:</label>
+                    <input type="number" id="experience" name="experience" placeholder="Enter your years of experience" min="0" required>
+                </div>
+            </div>
+
+            <!-- Section 4 -->
+            <div class="form-section" id="section4">
+                <h2>Feedback</h2>
+                <div class="form-group">
+                    <label for="feedback">Feedback:</label>
+                    <textarea id="feedback" name="feedback" rows="4" placeholder="Share your feedback"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="rating">How would you rate our service?</label>
+                    <select id="rating" name="rating" required>
+                        <option value="">Select rating</option>
+                        <option value="1">1 - Very Poor</option>
+                        <option value="2">2 - Poor</option>
+                        <option value="3">3 - Average</option>
+                        <option value="4">4 - Good</option>
+                        <option value="5">5 - Excellent</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="navigation-buttons">
+                <button type="button" id="prevBtn" disabled>Previous</button>
+                <button type="button" id="nextBtn">Next</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let currentSection = 0;
+        const sections = document.querySelectorAll(".form-section");
+        const progressBar = document.getElementById("progressBar");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+
+        function showSection(index) {
+            sections.forEach((section, i) => {
+                section.classList.toggle("active", i === index);
+            });
+            prevBtn.disabled = index === 0;
+            nextBtn.textContent = index === sections.length - 1 ? "Submit" : "Next";
+
+            // Update progress bar
+            progressBar.style.width = `${((index + 1) / sections.length) * 100}%`;
+        }
+
+        function validateSection(index) {
+            const inputs = sections[index].querySelectorAll("input, select, textarea");
+            for (let input of inputs) {
+                if (!input.checkValidity()) {
+                    input.reportValidity();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        nextBtn.addEventListener("click", () => {
+            if (nextBtn.textContent === "Submit") {
+                document.getElementById("surveyForm").submit();
+            } else if (validateSection(currentSection)) {
+                currentSection++;
+                showSection(currentSection);
+            }
+        });
+
+        prevBtn.addEventListener("click", () => {
+            currentSection--;
+            showSection(currentSection);
+        });
+
+        showSection(currentSection);
+    </script>
+</body>
+</html>
